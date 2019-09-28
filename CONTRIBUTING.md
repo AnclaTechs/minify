@@ -32,11 +32,38 @@ A company representative authorized to do so needs to download, fill, and print 
 
 # Contributing content guideline
 
-You can contribute in the following ways:
-- Finding and reporting bugs
-- Translating the Mastodon interface into various languages
-- Contributing code to Mastodon by fixing bugs or implementing features
-- Improving the documentation
+**Coding Style**
+- Do write comments. (You don't have to comment every line, but if you come up with something that's a bit complex/weird, just leave a comment. Bear in mind that you will probably leave the project at some point and that other people will read your code. Undocumented huge amounts of code are worthless!)
+- Indentation:JS/CSS: 2 spaces; HTML: 4 spaces; **Python: Tabs**;
+- Don't overengineer. Don't try to solve any possible problem in one step, but try to solve problems as easy as possible and improve the solution over time!
+- Do generalize sooner or later! (if an old solution, quickly hacked together, poses more problems than it solves today, refactor it!)
+- Keep it compatible. Do not introduce changes to the public API, db schema or configurations too lightly. Don't make incompatible changes without good reasons!
+- If you do make changes, document them! (see below)
+
+# Braching Model/git workflow
+see git flow: [http://nvie.com/posts/a-successful-git-branching-model/](http://nvie.com/posts/a-successful-git-branching-model/)
+
+**``master`` branch**
+- The stable
+- This is the branch everyone should use for production stuff.
+
+**``develop`` branch**
+- Everything that is READY to go into master at some point in time
+- This stuff is tested and ready to go out.
+
+**release branches**
+- Changes that should go into master very soon
+- only bugfixes go into these (see [http://nvie.com/posts/a-successful-git-branching-model/](http://nvie.com/posts/a-successful-git-branching-model/) for why)
+- We should not be blocking new features to develop, just because we feel that we should be releasing it to master soon. This is the situation that release branches solve/handle.
+
+**hotfix branches**
+- Fixes for bugs in master
+
+**feature branches (in your own repos)**
+- These are the branches where you develop your features in
+- If it's ready to go out, it will be merged into develop
+
+
 
 
 # Pull requests
