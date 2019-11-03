@@ -11,6 +11,15 @@ django = "*"
 django-allauth = "*"
 django-widget-tweaks = "*"
 django-bootstrap4 = "*"
+django-tinymce4-widget = "*"
+timeago = "*"
+psycopg2-binary = "*"
+psycopg2 = "*"
+celery = {extras = ["redis"],version = "*"}
+django-celery-email = "*"
+gunicorn = "*"
+dj-database-url = "*"
+django-heroku = "*"
 
 [requires]
 python_version = "3.6"
