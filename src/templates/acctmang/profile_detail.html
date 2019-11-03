@@ -1,0 +1,55 @@
+{% extends 'genericB.html' %} {% load static %} {% block parent %}
+
+<div class="container">
+  <div style="padding-top: 30px;">
+    <div class="row">
+      <div class="col-sm-6">
+        <h4>Username: {{ object.slug }}</h4>
+        <h6>
+          Date Joined: <b>{{ object.created }}</b>
+        </h6>
+        <b>{{ object.firstname }} {{ object.lastname }}</b>
+      </div>
+      <div class="col-sm-6">
+        <h4>Links</h4>
+        <h6>
+          Github: <a href="{{ object.github }}">{{ object.github }}</a>
+        </h6>
+        <h6>
+          Twitter: <a href="{{ object.twitter }}">{{ object.twitter }}</a>
+        </h6>
+        <h6>
+          Instagram: <a href="{{ object.instagram }}">{{ object.instagram }}</a>
+        </h6>
+        <h6>
+          Website: <a href="{{ object.website }}">{{ object.website }}</a>
+        </h6>
+        <h6>
+          Bio:
+          <i
+            ><b>{{ object.bio }}</b></i
+          >
+        </h6>
+      </div>
+      {% if request.user.username == object.slug %}
+      <div class="text-center">
+        <a
+          class="btn btn-success"
+          href="{% url 'edit-profile' id=object.id slug=object.slug %}"
+          >Edit Profile</a
+        >
+      </div>
+      {% else %}
+      <div>
+        <button class="btn btn-success" href="#">
+          Send Mail <i class="fas fa-envelope"></i>
+        </button>
+      </div>
+      {% endif %}
+    </div>
+    <hr />
+    <h4>Posts</h4>
+  </div>
+</div>
+
+{% endblock parent %}

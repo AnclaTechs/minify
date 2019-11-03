@@ -1,0 +1,9 @@
+.post-comment-author-details {
+  float: right;
+  margin: 0;
+}
+
+img {
+  width: 23px;
+  border-radius: 50%;
+}

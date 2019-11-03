@@ -1,0 +1,15 @@
+{% extends "generic.html" %} {% load static %} {% block parent %}
+
+<div class="container">
+  <br />
+  <div class="card card-body col-sm-6 offset-3 text-center">
+    <h1>Error 400 <i class="fas fa-ban"></i></h1>
+    <br />
+    <br />
+
+    <h4>Page not found</h4>
+    <a href="{% url 'generic' %}" class="btn btn--primary btn-lg">Go home</a>
+  </div>
+</div>
+
+{% endblock parent %}

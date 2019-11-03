@@ -1,0 +1,185 @@
+{% extends "genericB.html" %} {% load static %} {% block parent %}
+
+<link rel="stylesheet" href="{% static 'css/tiny.css' %}" />
+<div class="container">
+  <div class="mt-5">
+    <span><h3 class="text-center">
+      <b>{{ object.title.capitalize }}</b>
+      <button id="bbtn" class="bookmark-btn"><i id="bbtn-icon" class="far fa-bookmark"></i></button> 
+    </h3>
+    </span>
+
+    <hr />
+    <div class="tiny" id="question-body"></div>
+    <hr />
+
+    <div class="author-details">
+      Asked by:
+      <span style="display: inline"><b>{{ object.owner.username }} </b></span>
+      <span>
+          <img src="{% static 'images/defaultprofile.png' %}"></img>
+      </span>
+      <br/>
+      <span>{{ object.created }}</span>
+    </div>
+    <br/>
+    <div>
+      <p class="answer-no">{{ object.queanswers.count }} Answers</p>
+    </div>
+    <div class="row">
+      <div class="col-sm-6">
+        <a href="{% url 'answer-question'  object.id  %}" class="btn btn-success btn-block">Add answer</a>
+      </div>
+      <div class="no-breaking-space-btn"> &nbsp; &nbsp; &nbsp; </div>
+      <div class="col-sm-6">
+          <button class="btn btn-success btn-block" data-toggle="modal" data-target="#commentModal">Add Comment</button>
+      </div>
+    </div>
+    <hr/>
+    <div id="que-answers">
+    </div>
+  </div>
+</div>
+<!-- QueComment Modal -->
+<div class="modal fade" id="commentModal" tabindex="-1" role="dialog" aria-labelledby="commentModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="commentModalLabel">Add comment</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form>
+          <div class="form-group">
+            <textarea style="height: 206px;" class="form-control"></textarea>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button disabled type="button" class="btn btn-primary">Submit</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- +Scripts -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+<script>
+  //Questions
+  const body = String(`{{ object.body }}`);
+  function htmlUnescape(body) {
+    return body
+      .replace(/&quot;/g, '"')
+      .replace(/&#39;/g, "'")
+      .replace(/&lt;/g, "<")
+      .replace(/&gt;/g, ">")
+      .replace(/&amp;/g, "&");
+  }
+  const bodyToHtml = $("<textarea/>")
+    .html(body)
+    .text();
+  $("#question-body").append(bodyToHtml);
+</script>
+<script>
+  //Bookmark button Controller:: toggler (Cross-Browser)
+  const bookmarkBtnAction = function(e){
+    e.preventDefault();
+    const btnIcon = document.querySelector("#bbtn-icon");
+    var classes = btnIcon.className.split(" ");
+    if(classes[0] == "far"){
+      classes[0] = "fas"
+    }else{
+      classes[0] = "far"
+    }
+    btnIcon.className = classes.join(" ");
+  }
+    const bookmarkBtn = document.querySelector("#bbtn")
+    bookmarkBtn.addEventListener("click", bookmarkBtnAction)
+</script>
+<script>
+  //Connecting function for QueAnswer for a Question
+    const answerObjectContainer = []
+    let answerLength = "{{ object.queanswers.all.count }}"
+    answerLength == 1 ? answerLength=answerLength: answerLength=answerLength/2
+    "{% for answer in object.queanswers.all %}"
+    for(var i =1; i <=answerLength; i++){
+      const queAnswer = {}
+      queAnswer["body"] = "{{ answer.body }}";
+      queAnswer["author"] = "{{ answer.author.username }}"
+      queAnswer["created"] = "{{ answer.created }}"
+      queAnswer["id"] = "{{ answer.id }}"
+      queAnswer["upvote"] = "{{ answer.queanswervotes.upvote }}"
+      queAnswer["downvote"] = "{{ answer.queanswervotes.downvote }}"
+
+
+      answerObjectContainer.push(queAnswer)
+    }
+    "{% endfor %}"
+    if(answerObjectContainer.length >= 1){
+      for(var j = 0; j < answerObjectContainer.length; j++){
+        let answerBody = answerObjectContainer[j].body
+        answerBody = answerBody + `
+        <div class="answers-controller-btn-container">
+          <button type="button" onclick="upvoteAnswer(${answerObjectContainer[j].id})" class="vote"><i class="fas fa-chevron-circle-up"></i></button>
+          <span>${answerObjectContainer[j].upvote - answerObjectContainer[j].downvote }<span>
+          <button type="button" onclick="downvoteAnswer(${answerObjectContainer[j].id})" class="vote"> <i class="fas fa-chevron-circle-down"></i></button>
+          <button><i class="far fa-comment-alt"></i></button>
+        </div>
+
+        <div class="author-details">
+        Answer by:
+        <span style="display: inline"><b>${answerObjectContainer[j].author}</b></span>
+        <span>
+            <img src="{% static 'images/defaultprofile.png' %}"></img>
+        </span>
+        <br/>
+        <span>${answerObjectContainer[j].created}</span>
+        </div>
+        <div style="height:30px;"></div>
+        <hr/>
+        `
+
+        function htmlUnescape(answerBody) {
+          return answerBody
+            .replace(/&quot;/g, '"')
+            .replace(/&#39;/g, "'")
+            .replace(/&lt;/g, "<")
+            .replace(/&gt;/g, ">")
+            .replace(/&amp;/g, "&");
+        }
+        const answerToHtml = $("<textarea/>").html(answerBody).text();
+        $("#que-answers").append(answerToHtml);
+
+      }
+    }
+</script>
+<script>
+  const upvoteAnswer = function(id){
+    $.post('/answer/vote', { answerId: id, action: "upvote" }, function(data){
+      if(data.status == "success"){
+        console.log("success")
+      }else{
+        window.location.href = data.url
+      }
+    })
+
+
+  }
+
+  const downvoteAnswer = function(id){
+    $.post('/answer/vote', { answerId: id, action: "downvote" }, function(data){
+      if(data.status == "success"){
+        console.log("success")
+      }else{
+        window.location.href = data.url
+      }
+    })
+
+
+  }
+
+</script>
+{% endblock parent %}

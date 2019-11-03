@@ -1,0 +1,113 @@
+{% extends "genericB.html" %} {% load static %} {% block parent %}
+<link rel="stylesheet" href="{% static 'css/posts.css' %}" />
+<style>
+  .main-post-img {
+    padding: 20px 25px 20px;
+    position: absolute;
+    width: 85px;
+    height: 95px;
+    border-radius: 50%;
+  }
+
+  .post-content {
+    padding: 35px 75px 35px;
+  }
+</style>
+<div class="container">
+  <div class="card card-body mt-5">
+    <img class="main-post-img" src="{% static 'images/defaultprofile.png' %}" />
+    <h5 class="post-content" style="display: inline;">{{ object.body }}</h5>
+  </div>
+  <div style="color:grey; margin-top: 7px;" class="text-center">
+    <span style="display: inline"
+      ><i class="fa fa-heart fa-lg fa-custom"></i>
+      {{ object.likes.count }}</span
+    >
+    &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+    <span style="display: inline"
+      ><i class="far fa-comment-alt fa-lg"></i>
+      {{ object.postcommentary.count }}
+    </span>
+  </div>
+  <br />
+
+  <div class="post-content-top">
+    {% if user.is_authenticated %}
+
+    <textarea
+      id="postarea"
+      rows="13"
+      cols="20"
+      style="height: 200px;"
+      class="form-control"
+      placeholder="Pass comment"
+    ></textarea>
+    <div style="padding-top: 4px;">
+      <!-- <span style="display: inline; color: #000000">Poll</span> 
+                <span style="display: inline; color: #000000">
+                  <a href="javascript:void(0)">
+                    <i class="far fa-smile fa-lg"></i> </a
+                ></span>
+                <span style="display: inline; color: #000000">
+                  <a href="javascript:void(0)">
+                    <i class="fas fa-poll fa-lg"></i> </a
+                ></span>
+                <span style="display: inline; color: #000000">
+                  <a href="javascript:void(0)">
+                    <i class="far fa-image fa-lg"></i> </a
+                ></span>
+                  -->
+      <span style="float: right">
+        <button
+          onclick="makePostCommentary({{ object.id }})"
+          type="button"
+          disabled
+          class="btn btn-primary btn-md post-bbtn"
+        >
+          Post
+        </button>
+      </span>
+    </div>
+    {% else %}
+    <div class="post-content-top">
+      <p class="text-center">
+        <a href="{% url 'account_login' %}"><b>Sign in to pass comment</b></a>
+      </p>
+    </div>
+    {% endif %}
+
+    <br />
+    <!---->
+    <hr />
+    {% for comment in object.postcommentary.all %}
+    <div class="card">
+      <div class="card-body">
+        <div class="post-body">
+      {{ comment.body }}
+    </div>
+      <div class="post-comment-author-details">
+          <span style="display: inline"><b><a href="/{{ comment.owner }}" style="color: inherit;">{{ comment.owner }}</a></b></span>
+          <span>
+              <img src="{% static 'images/defaultprofile.png' %}"></img>
+          </span>
+          <br/>
+          <span>{{ comment.created }}</span>
+      </div>
+    </div>
+
+    </div>
+    <br />
+  </div>
+  {% endfor %}
+</div>
+<script>
+  const makePostCommentary = function(id) {
+    const post = document.querySelector("#postarea").value;
+    $.post("/passcomment", { postContent: post, id: id }, function(data) {
+      if (data.status == "success") {
+        window.location.reload();
+      }
+    });
+  };
+</script>
+{% endblock parent %}

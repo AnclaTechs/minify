@@ -1,0 +1,64 @@
+{% extends "genericB.html" %} {% load static %} {% load bootstrap4 %}
+<br />
+{% load widget_tweaks %} {% block parent %}
+<script
+  type="text/javascript"
+  src="https://code.jquery.com/jquery-1.12.0.min.js"
+></script>
+
+<!-- -->
+<div class="container">
+  <div class="text-center">
+    <h4 class="note-title mt-5">
+      <i class="fas fa-edit"></i> {{ note.title }}
+    </h4>
+  </div>
+  <form method="POST" action="{% url 'edit-note' pk=note.id slug=note.slug %}">
+    {% if messages %}
+    <ul class="messages">
+      {% for message in messages %}
+      <li class="{{ message.tags }}">{{ message }}</li>
+      {% endfor %}
+    </ul>
+    {% endif %} {% csrf_token %}
+    <div class="form-group">
+      <div class="row">
+        <div class="col-md-9">
+          <label class="custom-small-bold">Title</label>
+          {% render_field form.title class="form-control" value=note.title %}
+        </div>
+        <div class="col-md-3">
+          <label class="custom-small-bold">Note Type</label>
+          {% render_field form.notetype class="form-control" value=note.notetype %}
+        </div>
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="custom-small-bold">Body</label>
+      {% render_field form.note class="form-control textarea-m-height" id="noteBody" %}
+    </div>
+    <div class="form-group">
+      <label class="custom-small-bold">Additional Links</label>
+      <span style="color:red"><small>Seperate links with commas</small></span>
+      {% render_field form.links class="form-control" value=note.links %}
+    </div>
+    <div class="form-group">
+      <label class="custom-small-bold">Make Public</label>
+      {% render_field form.public value=note.public %}
+    </div>
+
+    <div class="form-group">
+      <button type="submit" class="btn btn-primary btn-lg">
+        <i class="fas fa-save"></i> Update
+      </button>
+    </div>
+  </form>
+  <br />
+  <br />
+  <br />
+</div>
+<script>
+  var defaultValue = `{{ note.note }}`;
+  $("#noteBody").append(defaultValue);
+</script>
+{% endblock parent %}

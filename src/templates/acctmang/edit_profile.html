@@ -1,0 +1,79 @@
+{% extends "genericB.html" %} {% load static %} {% load bootstrap4 %}
+<br />
+{% load widget_tweaks %} {% block parent %}
+
+<div class="container">
+  <div class="text-center">
+    <h4 class="note-title mt-5">
+      <i class="fas fa-edit"></i> Edit Profile Details
+    </h4>
+  </div>
+  <form method="POST" action="{% url 'edit-profile' id=profile.id slug=profile.slug %}">
+    {% if messages %}
+    <ul class="messages">
+      {% for message in messages %}
+      <li class="{{ message.tags }}">{{ message }}</li>
+      {% endfor %}
+    </ul>
+    {% endif %} {% csrf_token %}
+    <div class="form-group">
+      <label class="custom-small-bold">Username</label>
+      {% render_field form.slug class="form-control" value=profile.slug readonly="true" %}
+      <br />
+      <label class="custom-small-bold">First Name</label>
+      {% render_field form.firstname class="form-control" value=request.user.profile.firstname %}
+      <br />
+      <label class="custom-small-bold">Last Name</label>
+      {% render_field form.lastname class="form-control" value=request.user.profile.lastname %}
+      <br />
+      <div class="row">
+        <div class="col-sm-6">
+      <label class="custom-small-bold">Location</label>
+      {% render_field form.location class="form-control" value=request.user.profile.location %}
+        </div>
+        <div class="col-sm-6">
+      <label class="custom-small-bold">Tech Stack</label>
+      {% render_field form.tstack class="form-control" value=request.user.profile.tstack %}
+        </div>
+      </div>
+
+      <br/>
+      <div class="row">
+        <div class="col-sm-6">
+      <label class="custom-small-bold">Github Page</label>
+      {% render_field form.github class="form-control" value=request.user.profile.github %}
+        </div>
+        <div class="col-sm-6">
+      <label class="custom-small-bold">Website</label>
+      {% render_field form.website class="form-control" value=request.user.profile.website %}
+        </div>
+      </div>
+
+         <br/>
+      <div class="row">
+        <div class="col-sm-6">
+      <label class="custom-small-bold">Twitter</label>
+      {% render_field form.twitter class="form-control" value=request.user.profile.twitter %}
+        </div>
+        <div class="col-sm-6">
+      <label class="custom-small-bold">Instagram</label>
+      {% render_field form.instagram class="form-control" value=request.user.profile.instagram %}
+        </div>
+      </div>
+
+      <br/>
+      <label class="custom-small-bold">Bio</label>
+      {% render_field form.bio class="form-control" value=profile.bio %}
+    </div>
+
+    <div class="form-group">
+      <button type="submit" class="btn btn-primary btn-lg">
+        Save
+      </button>
+    </div>
+  </form>
+  <br />
+  <br />
+  <br />
+</div>
+{% endblock parent %}

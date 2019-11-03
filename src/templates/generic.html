@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+      integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T"
+      crossorigin="anonymous"
+    />
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/base.css' %}" />
+    <title>Minify | Cloud diary for developers</title>
+  </head>
+  <body>
+    {% if user.is_authenticated %}
+    <nav class="navbar  navbar-dark bg-dark">
+      <div class="container">
+        <a class="navbar-brand text-logo" href="{% url 'generic' %}">Minify</a>
+        <form class="form-inline">
+          <input
+            class="form-control mr-sm-2"
+            type="search"
+            placeholder="Search"
+            aria-label="Search"
+          />
+          &nbsp; &nbsp; &nbsp;
+          <a
+            class="btn btn-outline-light my-2 my-sm-0"
+            href="{% url 'account_logout' %}"
+          >
+            Sign out
+          </a>
+          <a href="#"
+            ><i
+              style="margin-left: 15px; color: #ffffff;"
+              class="fas fa-user-alt fa-lg"
+            ></i
+          ></a>
+        </form>
+      </div>
+    </nav>
+    {% else %}
+
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+      <div class="container">
+        <a class="navbar-brand" href="{% url 'generic' %}">Minify</a>
+        <button
+          class="navbar-toggler"
+          type="button"
+          data-toggle="collapse"
+          data-target="#navbarSupportedContent"
+          aria-controls="navbarSupportedContent"
+          aria-expanded="false"
+          aria-label="Toggle navigation"
+        >
+          <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+          <ul class="navbar-nav mr-auto">
+            <li class="nav-item active">
+              <a class="nav-link" href="#"
+                >Why use it?<span class="sr-only"></span
+              ></a>
+            </li>
+            <li class="nav-item dropdown">
+              <a
+                class="nav-link dropdown-toggle"
+                href="#"
+                id="navbarDropdown"
+                role="button"
+                data-toggle="dropdown"
+                aria-haspopup="true"
+                aria-expanded="false"
+              >
+                Explore
+              </a>
+              <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                <span
+                  style="font-family:'Lucida Console', monospace; opacity: 0.5;"
+                  class="dropdown-item"
+                  >Learn, document & share</span
+                >
+                <a class="dropdown-item" href="/general">Mini-Notes</a>
+                <a class="dropdown-item" href="/general">Q&A</a>
+                <a class="dropdown-item" href="/general"
+                  >Community blog & guide</a
+                >
+
+                <div class="dropdown-divider"></div>
+                <a class="dropdown-item" href="/general"
+                  >Check out our community</a
+                >
+              </div>
+            </li>
+          </ul>
+          <form class="form-inline my-2 my-lg-0">
+            <input
+              class="form-control mr-sm-2"
+              type="search"
+              placeholder="Search Minify"
+              aria-label="Search"
+            />
+          </form>
+          <a
+            class="btn btn-outline-light my-2 my-sm-0"
+            href="{% url 'account_login' %}"
+          >
+            Sign in
+          </a>
+          &nbsp; &nbsp;
+          <a
+            class="btn btn-outline-light my-2 my-sm-0"
+            href="{% url 'account_signup' %}"
+          >
+            Sign up
+          </a>
+          {% endif %}
+        </div>
+      </div>
+    </nav>
+    {% block parent %} {% endblock parent %}
+
+    <script
+      src="https://kit.fontawesome.com/c8c9028de4.js"
+      crossorigin="anonymous"
+    ></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+
+    <script>
+      function getCookie(name) {
+        var cookieValue = null;
+        if (document.cookie && document.cookie != "") {
+          var cookies = document.cookie.split(";");
+          for (var i = 0; i < cookies.length; i++) {
+            var cookie = jQuery.trim(cookies[i]);
+            // Does this cookie string begin with the name we want?
+            if (cookie.substring(0, name.length + 1) == name + "=") {
+              cookieValue = decodeURIComponent(
+                cookie.substring(name.length + 1)
+              );
+              break;
+            }
+          }
+        }
+        return cookieValue;
+      }
+      var csrftoken = getCookie("csrftoken");
+      function csrfSafeMethod(method) {
+        // these HTTP methods do not require CSRF protection
+        return /^(GET|HEAD|OPTIONS|TRACE)$/.test(method);
+      }
+      $.ajaxSetup({
+        beforeSend: function(xhr, settings) {
+          if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+            xhr.setRequestHeader("X-CSRFToken", csrftoken);
+          }
+        }
+      });
+    </script>
+    <script src="{% static 'js/base.js' %}"></script>
+
+    <script>
+      $(function() {
+        var images = [
+          "01.jpg",
+          "02.jpg",
+          "03.jpg",
+          "04.jpg",
+          "05.jpg",
+          "06.jpg",
+          "07.jpg"
+        ];
+        $("#accounts-wrapper").css({
+          "background-image":
+            "url(../../static/images/" +
+            images[Math.floor(Math.random() * images.length)] +
+            ")",
+          "background-size": "cover"
+          //bg-size: cover || contain || 100% 100%
+        });
+      });
+    </script>
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+      integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+      integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+      crossorigin="anonymous"
+    ></script>
+  </body>
+</html>

@@ -1,0 +1,62 @@
+.tiny {
+  text-align: center;
+}
+
+.tiny p {
+  font-size: 1.3em;
+}
+
+img {
+  width: 23px;
+  border-radius: 50%;
+}
+
+.btn {
+  color: #ffffff;
+}
+
+.bookmark-btn {
+  padding: 0;
+  border: none;
+  background: none;
+}
+
+.bookmark-btn:focus {
+  outline: none;
+}
+
+.author-details {
+  float: right;
+  margin: 0;
+}
+
+.answers-controller-btn-container {
+  float: left;
+}
+.answers-controller-btn-container button {
+  border: none;
+  background: none;
+  color: gray;
+}
+
+.answer-no {
+  font-size: 1.3em;
+}
+
+#que-answers {
+  margin-top: 30px;
+}
+
+#que-answers p {
+  margin-bottom: 0;
+}
+
+.no-breaking-space-btn {
+  display: none;
+}
+
+@media only screen and (max-width: 570px) {
+  .no-breaking-space-btn {
+    display: inline;
+  }
+}

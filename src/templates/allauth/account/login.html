@@ -1,0 +1,44 @@
+{% extends "account/base.html" %} {% load bootstrap4%} {% load i18n %} {% load
+account socialaccount %} {% block head_title %}{% trans "Sign In" %} <br />
+{% endblock %} {% block content %}
+
+<div class="container">
+  <div style="padding-top: 10px">
+    <div class="row justify-content-md-center">
+      <div class="col-md-6">
+        <div class="card card-body mt-5">
+          <div class="text-center">
+            <h1>{% trans "Sign In" %}</h1>
+          </div>
+
+          <form class="login" method="POST" action="{% url 'account_login' %}">
+            {% csrf_token %} {% bootstrap_form form %}
+            <br />
+            {% if redirect_field_value %}
+            <input
+              type="hidden"
+              name="{{ redirect_field_name }}"
+              value="{{ redirect_field_value }}"
+            />
+            {% endif %}
+            <div class="text-center">
+              <button type="submit" class="btn btn-success btn-lg">
+                {% trans "Sign In" %}
+              </button>
+              <br />
+              <br />
+
+              <a
+                class="button secondaryAction"
+                href="{% url 'account_reset_password' %}"
+                >{% trans "Forgot Password?" %}</a
+              >
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

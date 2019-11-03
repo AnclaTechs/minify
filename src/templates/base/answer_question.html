@@ -1,0 +1,107 @@
+{% extends "genericB.html" %} {% load static %} {% block parent %}
+
+<link rel="stylesheet" href="{% static 'css/tiny.css' %}" />
+<div class="container">
+  <div class="mt-5">
+    <h3 class="text-center">
+      <b>{{ question.title.capitalize }}</b>
+    </h3>
+    <hr />
+    <div class="tiny" id="question-body"></div>
+    <hr />
+
+    <div class="author-details">
+      Asked by:
+      <span style="display: inline"><b>{{ question.owner.username }} </b></span>
+      <span>
+          <img src="{% static 'images/defaultprofile.png' %}"></img>
+      </span>
+      <br/>
+      <span>{{ question.created }}</span>
+    </div>
+    <br/>
+    <br/>
+
+    <form>
+        <div class="form-group">
+            <label><h3>Write Answer</h3></label>
+            <input type="textarea" id="textarea" />
+        </div>
+        <div class="text-center">
+        <button onclick="tinymceAction()" class="btn btn-primary" type="button">
+            Submit
+        </button>
+    </div>
+    </form>
+
+  </div>
+</div>
+
+<!---->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+<script>
+  const body = String(`{{ question.body }}`);
+  function htmlUnescape(body) {
+    return body
+      .replace(/&quot;/g, '"')
+      .replace(/&#39;/g, "'")
+      .replace(/&lt;/g, "<")
+      .replace(/&gt;/g, ">")
+      .replace(/&amp;/g, "&");
+  }
+  const bodyToHtml = $("<textarea/>")
+    .html(body)
+    .text();
+  $("#question-body").append(bodyToHtml);
+</script>
+
+<!-- Load TinyMCE from CDN -->
+<script src="//cdn.tinymce.com/4/tinymce.js"></script>
+
+<script>
+  tinymce.init({
+    selector: "#textarea",
+    height: 200,
+    theme: "modern",
+    plugins: [
+      "advlist autolink lists link image charmap print preview hr anchor pagebreak",
+      "searchreplace wordcount visualblocks visualchars code fullscreen",
+      "insertdatetime media nonbreaking save table contextmenu directionality",
+      "emoticons template paste textcolor colorpicker textpattern imagetools codesample toc"
+    ],
+    toolbar1:
+      "undo redo | insert | styleselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image",
+    toolbar2:
+      "print preview media | forecolor backcolor emoticons | codesample",
+    image_advtab: true,
+    templates: [
+      { title: "Test template 1", content: "Test 1" },
+      { title: "Test template 2", content: "Test 2" }
+    ],
+    content_css: [
+      "//fonts.googleapis.com/css?family=Lato:300,300i,400,400i",
+      "//www.tinymce.com/css/codepen.min.css"
+    ]
+  });
+</script>
+
+<script type="text/javascript">
+    const tinymceAction = function() {
+        const questionID  =  "{{ question.id }}"
+      const answer = tinyMCE.activeEditor.getContent();
+  
+      if (
+        answer == "" || answer.length < 10
+      ) {
+        alert("Invalid Queston Format");
+      } else {
+        $.post(`/question/give-answer/${questionID}/page`, { questionID: questionID, answer: answer }, function(
+          data
+        ) {
+          window.location.href = data.url;
+        });
+      }
+    };
+  </script>
+
+{% endblock parent %}

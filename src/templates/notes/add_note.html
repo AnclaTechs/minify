@@ -1,0 +1,49 @@
+{% extends "genericB.html" %} {% load static %} {% load widget_tweaks %}
+<br />
+{% block parent %}
+<div class="container">
+  <div style="margin-top: 30px;" class="text-center">
+    <h2>Add Note</h2>
+  </div>
+  <div>
+    <form method="POST" action="{% url 'add-note' %}">
+      {% if messages %}
+      <ul class="messages">
+        {% for message in messages %}
+        <li class="{{ message.tags }}">{{ message }}</li>
+        {% endfor %}
+      </ul>
+      {% endif %} {% csrf_token %}
+      <div class="form-group">
+        <div class="row">
+          <div class="col-md-9">
+            <label class="custom-small-bold">Title</label>
+            {% render_field form.title class="form-control" type="text" %}
+          </div>
+          <div class="col-md-3">
+            <label class="custom-small-bold">Note Type</label>
+            {% render_field form.notetype class="form-control"%}
+          </div>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="custom-small-bold">Body</label>
+        {% render_field form.note class="form-control textarea-m-height" %}
+      </div>
+      <div class="form-group">
+        <label class="custom-small-bold">Additional Links</label>
+        <span style="color:red"><small>Seperate links with commas</small></span>
+        {% render_field form.links class="form-control" %}
+      </div>
+      <div class="form-group">
+        <label class="custom-small-bold">Make Public</label>
+        {% render_field form.public %}
+      </div>
+
+      <div class="form-group">
+        <button type="submit" class="btn btn-primary btn-lg">Create</button>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock parent %}

@@ -1,0 +1,66 @@
+{% extends "genericB.html" %} {% load static %} {% load widget_tweaks %}
+<br />
+{% block parent %}
+<script
+  type="text/javascript"
+  src="https://code.jquery.com/jquery-1.12.0.min.js"
+></script>
+
+<link rel="stylesheet" href="{% static 'css/note.css' %}" />
+<div class="container">
+  <div class="text-center">
+    <h4 class="note-title">{{ note.title }}</h4>
+  </div>
+  <hr />
+  <p id="noteBody" class="note-body"></p>
+  <p id="noteLinks"></p>
+  <br />
+  <br />
+  <div class="text-center">
+    <button class="btn btn-primary btn-lg">
+      <i class="fas fa-share-alt"></i> Share
+    </button>
+    &nbsp;
+    <a
+      href="/editnote/{{ note.id }}/{{ note.slug }}"
+      class="btn btn-success btn-lg"
+    >
+      <i class="fas fa-edit"></i> Edit
+    </a>
+  </div>
+  <br />
+  <br />
+  <br />
+</div>
+
+<script>
+  const body = String(`{{ note.note }}`);
+  let noteBody = document.getElementById("noteBody");
+  function htmlUnescape(body) {
+    return body
+      .replace(/&quot;/g, '"')
+      .replace(/&#39;/g, "'")
+      .replace(/&lt;/g, "<")
+      .replace(/&gt;/g, ">")
+      .replace(/&amp;/g, "&");
+  }
+  const bodyToHtml = $("<textarea/>")
+    .html(body)
+    .text();
+
+  $("#noteBody").append(bodyToHtml);
+</script>
+<script>
+  let link = "{{ note.links }}";
+  const links = link.split(",");
+  let noteLinks = document.getElementById("noteLinks");
+  for (var i = 0; i < links.length; i++) {
+    noteLinks.innerHTML += `<i class="fas fa-link"></i> &nbsp;`;
+    let child = document.createElement("a");
+    child.setAttribute("href", `${links[i]}`);
+    child.textContent = links[i];
+    noteLinks.appendChild(child);
+    noteLinks.innerHTML += ", <br/>";
+  }
+</script>
+{% endblock parent %}

@@ -1,0 +1,272 @@
+{% extends "genericB.html" %} {% load static %} {% block parent %}
+<link rel="stylesheet" href="{% static 'css/home.css' %}" />
+<script
+  type="text/javascript"
+  src="https://code.jquery.com/jquery-1.12.0.min.js"
+></script>
+<script
+  src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"
+  integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS"
+  crossorigin="anonymous"
+></script>
+
+<!--Infinite scroll dependencies-->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/waypoints/4.0.1/jquery.waypoints.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/waypoints/4.0.1/shortcuts/infinite.min.js"></script>
+
+<div class="container">
+  <div class="text-center">
+    <div style="height: 300px" class="card card-body shadow mt-5">
+      <h3 style="font-weight: 600; margin: auto">
+        Got frequently used boilerplates, problems or solutions?
+        <br />
+        <br />
+
+        <button
+          style="width:200px; margin: auto"
+          class="btn btn-success btn-lg"
+        >
+          <a style="text-decoration: none; color: inherit;" href="{% url 'add-note' %}"><i class="fas fa-plus-circle"></i> Add Note</a>
+        </button>
+      </h3>
+    </div>
+  </div>
+</div>
+<hr />
+<div class="container">
+  <div class="row">
+    <div class="col-md-12">
+      <div class="tab" role="tabpanel">
+        <!-- Nav tabs -->
+        <ul class="nav nav-tabs" role="tablist">
+          <li role="presentation" class="active">
+            <a
+              href="#Section1"
+              aria-controls="home"
+              role="tab"
+              data-toggle="tab"
+              >Notes</a
+            >
+          </li>
+          <li role="presentation">
+            <a
+              href="#Section2"
+              aria-controls="profile"
+              role="tab"
+              data-toggle="tab"
+              >Top Questions</a
+            >
+          </li>
+          <li role="presentation">
+            <a
+              href="#Section3"
+              aria-controls="messages"
+              role="tab"
+              data-toggle="tab"
+              >Posts</a
+            >
+          </li>
+        </ul>
+        <!-- Tab panes -->
+        <div class="tab-content tabs">
+          <div role="tabpanel" class="tab-pane fade in show active" id="Section1">
+            <div class="container">
+            {% if user.is_authenticated %}
+
+              <div id="notesidContainer" class="row">
+              </div>
+            {% else %}
+            <p class="text-center"><a href="{% url 'account_login' %}">Sign in </a>to create, save and share notes</p>
+            {% endif %}
+            </div>
+
+          </div>
+          <div role="tabpanel" class="tab-pane fade" id="Section2">
+            <div class="container">
+              <div class="text-center">
+              <h3><b>Ask new Question <a href="{% url 'new_question' %}"> here</a></b></h3>
+              <hr/>
+              <div id="question-container" class="question">
+              </div>
+              <div id="page-buttons-container"></div>
+
+            </div>
+          </div>
+          </div>
+          <div role="tabpanel" class="tab-pane fade" id="Section3">
+          {% if user.is_authenticated %}
+
+            <div class="post-content-top">
+              <hr />
+              <img src="{% static 'images/defaultprofile.png' %}"></img>
+              <textarea
+              id="postarea"
+              rows="13"
+              cols="20"
+                class="form-control"
+                placeholder="What's happening?"
+              ></textarea>
+              <div style="padding-top: 4px;">
+                <!-- <span style="display: inline; color: #000000">Poll</span> 
+                <span style="display: inline; color: #000000">
+                  <a href="javascript:void(0)">
+                    <i class="far fa-smile fa-lg"></i> </a
+                ></span>
+                <span style="display: inline; color: #000000">
+                  <a href="javascript:void(0)">
+                    <i class="fas fa-poll fa-lg"></i> </a
+                ></span>
+                <span style="display: inline; color: #000000">
+                  <a href="javascript:void(0)">
+                    <i class="far fa-image fa-lg"></i> </a
+                ></span>
+                  -->
+                <span style="float: right">
+                  <button onclick="makePost()" type="button" disabled class="btn btn-primary btn-md post-bbtn">Post</button>
+                </span>
+              </div>
+              <br/>
+              <!---->
+              <hr/>
+            </div>
+            {% else %}
+            <div class="post-content-top">
+              <p class="text-center">Suggested Post. <a href="{% url 'account_login' %}">Sign in to share</a></p>
+
+            </div>
+            {% endif %}
+
+         
+            <!---->
+            <div class="minify-posts">
+              <div class="infinite-container">
+                {% for post in post_em %}
+                    <div class="minify-posts-users-content">
+                        <span style="padding-left: 10px;"> @{{ post.owner }}</span>
+
+                        <img src="{% static 'images/defaultprofile.png' %}"></img>              
+                        <div class="post">
+                          <a href="/post/{{ post.id }}/{{ post.owner }}">
+                            <p class="infinite-item">{{ post.body }}</p>
+                          </a>
+                        </div>
+                        <div style="color:grey; margin-top: 7px;" class="text-center">
+                            <span style="display: inline"><button onclick=likePost({{ post.id }})> <i class="far fa-heart fa-lg"></i> {{ post.likes.count }} </button></span>
+                            &nbsp;
+                            &nbsp;
+                            &nbsp;
+                            &nbsp;
+                            &nbsp;
+                            <span style="display: inline"><a href="/post/{{ post.id }}/{{ post.owner }}"><i class="far fa-comment-alt fa-lg"></i> {{ post.postcommentary.count }} </a></span>
+                        </div>
+                    </div>
+                    <hr/>
+
+                {% endfor %}
+            </div>
+                {% if post_em.has_next %}
+                    <a class="infinite-more-link" href="?page={{ numbers.next_page_number }}">More</a>
+                {% endif %}
+
+                <div class="loading" style="display: none;">
+                    Loading...
+                </div>
+
+                <script>
+                    var infinite = new Waypoint.Infinite({
+                    element: $('.infinite-container')[0],
+                    onBeforePageLoad: function () {
+                        $('.loading').show();
+                    },
+                    onAfterPageLoad: function ($items) {
+                        $('.loading').hide();
+                    }
+                    });
+                </script>
+              </div>
+              <!---->
+
+           
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+  $.get("/getnote", function(data){
+    if(data.mininotes){
+    if(data.mininotes.length == 0 ){
+      const notice = `<div style="width: 100%;" class="text-center"><p>You have no notes yet. Create, Save and Share your Notes <a href="{% url 'add-note' %}" >here</a></p></div>`
+      $('#notesidContainer').append(notice)
+    }else{
+    for(var i= 0; i < data.mininotes.length; i++){
+      const note = `
+      <div class="notesnip col-sm-4">
+        <a class="note-links" href=/note/${data.mininotes[i].id}/${data.mininotes[i].slug}>
+          <div class="card shadow">
+            <div class="card-header">
+            <h4><b>${data.mininotes[i].title} </b></h4>
+            <small>on: ${ new Date(data.mininotes[i].modified).toDateString()}</small>
+            </div>
+            <div class="card-body">
+              <p>
+                ${data.mininotes[i].body} ...
+              </p>
+            </div>
+          </div>
+        </a>
+        
+      </div>
+      `
+      $('#notesidContainer').append(note)
+
+    }
+  }
+}
+  })
+
+</script>
+<script>
+  $.get("/get_questions/", function(data){
+    //console.log(data.questionLog[1].title)
+    for(var i = 0; i < data.questionLog.length; i++){
+      const content = `
+      <p>>>> <a href=/question/${data.questionLog[i].id}/${data.questionLog[i].slug}>${data.questionLog[i].title}</a></p>
+      <span class="question-details">${data.questionLog[i].time}</span>
+      &nbsp;
+      <span class="question-details" style="display: inline">Views: ${data.questionLog[i].viewsCount};</span>
+      &nbsp;
+
+      <span class="question-details" style="display: inline">Answers: ${data.questionLog[i].answersCount}</span>
+      <hr/>
+      `
+      $("#question-container").append(content)
+    }
+  })
+</script>
+<script>
+const makePost = function(){
+  const post = document.querySelector("#postarea").value;
+  $.post("/makepost", {postContent: post}, function(data){
+    window.location = data.url
+
+  })
+}
+</script>
+<script>
+const likePost = function(id){
+  $.post("/likepost", {id: id}, function(data){
+    if(data.url){
+      window.location = data.url
+    }
+    if(data.status == "success"){
+      console.log("success")
+    }
+  })
+
+}
+</script>
+
+
+{% endblock parent %}

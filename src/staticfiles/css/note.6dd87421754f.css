@@ -1,0 +1,8 @@
+.note-title {
+  margin-top: 40px;
+  font-weight: 600;
+}
+
+.note-body {
+  white-space: pre-wrap;
+}
