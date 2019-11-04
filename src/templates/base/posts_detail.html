@@ -2,20 +2,14 @@
 <link rel="stylesheet" href="{% static 'css/posts.css' %}" />
 <style>
   .main-post-img {
-    padding: 20px 25px 20px;
-    position: absolute;
-    width: 85px;
-    height: 95px;
-    border-radius: 50%;
+    width: 23px;
+  border-radius: 50%;
   }
-
-  .post-content {
-    padding: 35px 75px 35px;
-  }
+  
 </style>
 <div class="container">
   <div class="card card-body mt-5">
-    <img class="main-post-img" src="{% static 'images/defaultprofile.png' %}" />
+    <span><a href="/{{ object.owner }}">@{{ object.owner }} <img class="main-post-img" src="{% static 'images/defaultprofile.png' %}" /></a></span>
     <h5 class="post-content" style="display: inline;">{{ object.body }}</h5>
   </div>
   <div style="color:grey; margin-top: 7px;" class="text-center">

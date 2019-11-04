@@ -68,7 +68,7 @@ def index(request):
 
 
 def home(request):
-    post = Posts.objects.all()
+    post = Posts.objects.all().order_by("-created")
     page = request.GET.get('page', 1)
     paginator = Paginator(post, 10)
     try:
