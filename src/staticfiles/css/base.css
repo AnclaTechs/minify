@@ -103,6 +103,13 @@ form .form-control {
   }
 }
 
+@media only screen and (max-width: 570px) {
+  .wrapper-text-container {
+    width: unset;
+    margin: auto;
+  }
+}
+
 .footer {
   margin-top: 20px;
   margin-bottom: 20px;
