@@ -96,7 +96,7 @@ def new_question(request):
         # try and catch here
         Questions.objects.create(
             owner=user, title=title, body=question, slug=slug)
-        payload = {"url": "/general"}
+        payload = {"url": "/general/"}
         payload = json.dumps(payload)
         return JsonResponse(json.loads(payload), safe=False)
 
