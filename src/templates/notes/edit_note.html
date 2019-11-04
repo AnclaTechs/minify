@@ -1,6 +1,6 @@
 {% extends "genericB.html" %} {% load static %} {% load bootstrap4 %}
 <br />
-{% block head_title %}{% trans "Edit note" %}{% endblock %}
+{% block head_title %}Edit note - {{ note.title }}{% endblock %}
 {% load widget_tweaks %} {% block parent %}
 <script
   type="text/javascript"

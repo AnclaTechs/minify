@@ -1,4 +1,4 @@
-{% extends "genericB.html" %} {% load static %} {% block parent %}
+{% extends "genericB.html" %} {% block extra_head_tags %}<meta name="description" content="{{ object.body }} - Minify"/>{% endblock %}  {% load static %} {% block parent %}
 <link rel="stylesheet" href="{% static 'css/posts.css' %}" />
 <style>
   .main-post-img {

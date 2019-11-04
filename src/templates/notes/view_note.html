@@ -1,6 +1,6 @@
-{% extends "genericB.html" %} {% load static %} {% load widget_tweaks %}
+{% extends "genericB.html" %} {% load i18n %} {% load static %} {% block extra_head_tags %}<meta name="description" content="{{ note.title.capitalize }} - Minify"/>{% endblock %} {% load widget_tweaks %}
 <br />
-{% block head_title %}{{ note.title }} - Minify{% endblock %}
+{% block head_title %}{% trans note.title %}{% endblock %}
 {% block parent %}
 <script
   type="text/javascript"
