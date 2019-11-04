@@ -1,2 +1,2 @@
-web: gunicorn src.minify.wsgi
+web: gunicorn minify.wsgi
 worker: celery worker -A src.minify --loglevel=info
