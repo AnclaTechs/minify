@@ -52,15 +52,14 @@ def index(request):
     if request.method == "POST":
         form = SignupForm(request.POST)
         if form.is_valid():
-            print(y)
+            #POST is redirected to 'account-signup' on template
+            pass
     else:
         form = SignupForm()
 
     context = {
         "form": form
     }
-    y = get_client_ip(request)
-    print(y)
     return render(
         request,
         "base_landing.html",
