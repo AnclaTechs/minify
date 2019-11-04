@@ -1,4 +1,5 @@
-{% extends "genericB.html" %} {% load static %} {% block parent %}
+{% extends "genericB.html" %} {% load static %} {% block extra_head_tags %}<meta name="description" content="{{ object.title.capitalize }} - Minify"/>{% endblock %}
+{% block head_title %}{{ object.title.capitalize }}- Minify {% endblock %} {% block parent %}
 
 <link rel="stylesheet" href="{% static 'css/tiny.css' %}" />
 <div class="container">

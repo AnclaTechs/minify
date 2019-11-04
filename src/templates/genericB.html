@@ -10,10 +10,9 @@
       integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T"
       crossorigin="anonymous"
     />
-
-    {% load static %}
+    {% block extra_head_tags %}{% endblock %} {% load static %}
     <link rel="stylesheet" href="{% static 'css/base.css' %}" />
-    <title>Minify | Cloud diary for developers</title>
+    <title>{% block head_title %} {% endblock %}</title>
   </head>
   <body>
     {% if user.is_authenticated %}
