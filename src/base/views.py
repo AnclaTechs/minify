@@ -546,7 +546,7 @@ def share_note(request):
                 note.save(update_fields=["permitted_viewers"])
                 #
                 notification_message = "@{} sent you a note".format(user.get_username())
-                notification_action = "/sharednote/{}/{}".format(note.id, note.slug)
+                notification_action = "sharednote/{}/{}".format(note.id, note.slug)
                 Notification().add_notfication(receiver, notification_message, notification_action)
                 #
                 mail.send_messages(
@@ -571,7 +571,7 @@ def share_note(request):
                     note.save(update_fields=["permitted_viewers"])
                     #
                     notification_message = "@{} sent you a note".format(user.get_username())
-                    notification_action = "/sharednote/{}/{}".format(note.id, note.slug)
+                    notification_action = "sharednote/{}/{}".format(note.id, note.slug)
                     Notification().add_notfication(receiver, notification_message, notification_action)
                     #
                     mail.send_messages(
