@@ -3,8 +3,10 @@ from django.shortcuts import render, redirect, get_object_or_404, redirect
 from .forms import SignupForm, NoteForm
 from .models import Posts, Questions, QueAnswer, Vote, Like, Note
 from .models import PostsCommentary
+from acctmang.models import User
 from django.views import generic, View
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from django.core.exceptions import ObjectDoesNotExist
 import json
 from django.http import JsonResponse, HttpResponsePermanentRedirect, HttpResponseRedirect
 from django.contrib.auth.decorators import login_required
@@ -13,7 +15,10 @@ from django.utils.text import slugify
 import timeago
 from datetime import datetime
 import pytz
-from nfunctions.models import UrlHit, HitCount
+from nfunctions.models import UrlHit, HitCount, Notification
+from minify.mailer import Mailer
+mail = Mailer()
+from copy import deepcopy
 
 
 def get_client_ip(request):
@@ -109,7 +114,7 @@ def new_question(request):
 def get_questions(request):
     if request.is_ajax:
         object_length = Questions.objects.all().count()
-        query = Questions.objects.all()[0: 50][::-1]
+        query = Questions.objects.all().order_by("-created")[0: 50]
         questions_list = []
         for item in query:
             question = {}
@@ -434,6 +439,195 @@ class EditNote(View):
                 "modified",
             ])
             return redirect(reverse_lazy('view-note', kwargs={'pk':pk, 'slug': note_instance.slug}))
+
+
+@login_required
+def shared_note(request, pk, slug):
+    note = get_object_or_404(Note, pk=pk)
+    #check owner permitted viewers
+    if note.permitted_viewers != {}:
+        if request.user.id in note.permitted_viewers["viewers"]:
+            note_action = "/sharednote/{}/{}".format(note.id, note.slug)
+            try:
+                notification = Notification.objects.get(user=request.user, action=note_action)
+                notification.read = True
+                notification.save(update_fields=["read"])        
+            except ObjectDoesNotExist:
+                pass
+            return render(
+                request,
+                "notes/shared_note.html",
+                {"object": note}
+            )
+        else:
+            return render(
+                request,
+                "notes/shared_note.html",
+                {"access": "empty"}
+            )
+    else:
+        return render(
+            request,
+            "notes/shared_note.html",
+            {"access": "empty"}
+        )
+
+def note_share_user_confirmation(request):
+    try:
+        assert request.user.is_authenticated
+    except AssertionError:
+        payload = {"queryStatus": "failed"}
+        payload = json.dumps(payload)
+
+        return JsonResponse(json.loads(payload), safe=False)
+
+    if request.method == "POST" and request.is_ajax:
+        username_email = request.POST.get("usernameEmail")
+        #note_id = request.POST.get("noteID")
+        #user = request.user
+        #note = get_object_or_404(Note, owner=user, pk=note_id)
+        if "@" in username_email:
+            try:
+                user = User.objects.get(email=username_email)
+            except ObjectDoesNotExist:
+                payload = {"queryStatus": "failed"}
+                payload = json.dumps(payload)
+                return JsonResponse(json.loads(payload), safe=False)
+        else:
+            try:
+                user = User.objects.get(username=username_email)
+            except ObjectDoesNotExist:
+                payload = {"queryStatus": "failed"}
+                payload = json.dumps(payload)
+                return JsonResponse(json.loads(payload), safe=False)
+
+        if user:
+            username = user.get_username()
+            payload = {"queryStatus": "success", "username": username}
+            payload = json.dumps(payload)
+            return JsonResponse(json.loads(payload), safe=False)
+
+
+
+def share_note(request):
+    try:
+        assert request.user.is_authenticated
+    except AssertionError:
+        payload = {"requestStatus": "failed"}
+        payload = json.dumps(payload)
+
+        return JsonResponse(json.loads(payload), safe=False)
+
+    if request.method == "POST" and request.is_ajax:
+        username_email = request.POST.get("usernameEmail")
+        note_id = request.POST.get("noteId")
+        user = request.user
+        note = get_object_or_404(Note, owner=user, pk=note_id)
+
+        if "@" in username_email:
+            try:
+                receiver = User.objects.get(email=username_email)
+            except ObjectDoesNotExist:
+                payload = {"requestStatus": "failed"}
+                payload = json.dumps(payload)
+                return JsonResponse(json.loads(payload), safe=False)
+        else:
+            try:
+                receiver = User.objects.get(username=username_email)
+            except ObjectDoesNotExist:
+                payload = {"requestStatus": "failed"}
+                payload = json.dumps(payload)
+                return JsonResponse(json.loads(payload), safe=False)
+        
+        if note and user:
+            if note.permitted_viewers == {}:
+                note.permitted_viewers["viewers"] =  []
+                note.permitted_viewers["viewers"].append(receiver.id)
+                note.save(update_fields=["permitted_viewers"])
+                #
+                notification_message = "@{} sent you a note".format(user.get_username())
+                notification_action = "/sharednote/{}/{}".format(note.id, note.slug)
+                Notification().add_notfication(receiver, notification_message, notification_action)
+                #
+                mail.send_messages(
+                    subject="Notification from Minify",
+                    template="gen_emails/noteshare_notification.html",
+                    context={'sender': user.get_username(), "link": notification_action},
+                    to_emails=[receiver.email]
+                )
+                #
+                payload = {"requestStatus": "success"}
+                payload = json.dumps(payload)
+                return JsonResponse(json.loads(payload), safe=False)
+
+            else:
+                if user in note.permitted_viewers:
+                    #pass
+                    payload = {"requestStatus": "success"}
+                    payload = json.dumps(payload)
+                    return JsonResponse(json.loads(payload), safe=False)
+                else:
+                    note.permitted_viewers["viewers"].append(receiver.id)
+                    note.save(update_fields=["permitted_viewers"])
+                    #
+                    notification_message = "@{} sent you a note".format(user.get_username())
+                    notification_action = "/sharednote/{}/{}".format(note.id, note.slug)
+                    Notification().add_notfication(receiver, notification_message, notification_action)
+                    #
+                    mail.send_messages(
+                        subject="Notification from Minify",
+                        template="gen_emails/noteshare_notification.html",
+                        context={'sender': user.get_username(), "link": notification_action},
+                        to_emails=[receiver.email]
+                    )
+                    #
+                    payload = {"requestStatus": "success"}
+                    payload = json.dumps(payload)
+                    return JsonResponse(json.loads(payload), safe=False)
+        else:
+            payload = {"requestStatus": "failed", "message": "Error approving rights"}
+            payload = json.dumps(payload)
+            return JsonResponse(json.loads(payload), safe=False)
+
+
+def save_sharednote_copy(request):
+    try:
+        assert request.user.is_authenticated
+    except AssertionError:
+        payload = {"requestStatus": "failed"}
+        payload = json.dumps(payload)
+
+        return JsonResponse(json.loads(payload), safe=False)
+
+    if request.method == "POST" and request.is_ajax:
+        pk = request.POST.get("id")
+        note = get_object_or_404(Note, pk=pk)
+        #check owner permitted viewers
+        if note.permitted_viewers != {}:
+            if request.user.id in note.permitted_viewers["viewers"]:
+                new_instance = deepcopy(note)
+                new_instance.id = None
+                new_instance.owner = request.user
+                new_instance.save()
+                #
+                payload = {"requestStatus": "success", "url": "/general/"}
+                payload = json.dumps(payload)
+                return JsonResponse(json.loads(payload), safe=False)
+
+
+            else:
+                payload = {"requestStatus": "failed"}
+                payload = json.dumps(payload)
+                return JsonResponse(json.loads(payload), safe=False)
+
+        else:
+            payload = {"requestStatus": "failed"}
+            payload = json.dumps(payload)
+            return JsonResponse(json.loads(payload), safe=False)
+
+
+
+
 
 def handler404(request,
 	exception,

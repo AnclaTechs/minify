@@ -26,6 +26,7 @@ class Note(models.Model):
     """
     Minify Notes- Users personal notes
     """
+
     owner = models.ForeignKey(AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="note")
     title = models.CharField(max_length=100)
     slug = models.SlugField()
@@ -35,6 +36,7 @@ class Note(models.Model):
     public = models.BooleanField(default=False)
     created = models.DateTimeField(auto_now_add=True)
     modified = models.DateTimeField(blank=True, null=True)
+    permitted_viewers = JSONField(null=True, default=dict)
 
     def __str__(self):
         return "{}: {}".format(self.owner, self.created)

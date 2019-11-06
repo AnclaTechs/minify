@@ -1,0 +1,95 @@
+{% extends "genericB.html" %} {% load i18n %} {% load static %} {% block extra_head_tags %}<meta name="description" content="{{ note.title.capitalize }} - Minify"/>{% endblock %} {% load widget_tweaks %}
+<br />
+{% block head_title %}Shared Note -Minify{% endblock %}
+{% block parent %}
+<script
+  type="text/javascript"
+  src="https://code.jquery.com/jquery-1.12.0.min.js"
+></script>
+
+<link rel="stylesheet" href="{% static 'css/note.css' %}" />
+{% if access == "empty" %}
+<div class="container">
+  <br />
+  <div style="float: none; margin: 0 auto;" class="card card-body col-sm-6 text-center">
+    <h4>Permission Needed to view note <i style="color: red" class="fas fa-ban"></i></h4>
+    <br />
+    <br />
+    <div class="container">
+      <a style="border-radius: 50px" class="btn btn-success btn-lg" href="{% url 'generic' %}" class="btn btn--primary btn-lg">Go home</a>
+    </div>
+  </div>
+</div>
+{% else %}
+<div class="container">
+  <div class="text-center">
+    <h4 class="note-title">{{ object.title }} <small>by {{ object.owner.username }} </small></h4>
+  </div>
+  <hr />
+  <p id="noteBody" class="note-body"></p>
+  <p id="noteLinks"></p>
+  <br />
+  <br />
+  <div class="text-center">
+    <button class="btn btn-primary btn-lg" type="button", id="saveNoteBtn" onclick="saveNote()">
+      <i class="fas fa-save"></i> Save Note
+    </button>
+    &nbsp;
+    <button
+      class="btn btn-success btn-lg"
+      disabled
+    >
+      <i class="fas fa-edit"></i> Edit
+    </button>
+  </div>
+  <br />
+  <br />
+  <br />
+</div>
+
+<script>
+  const body = String(`{{ object.note }}`);
+  let noteBody = document.getElementById("noteBody");
+  function htmlUnescape(body) {
+    return body
+      .replace(/&quot;/g, '"')
+      .replace(/&#39;/g, "'")
+      .replace(/&lt;/g, "<")
+      .replace(/&gt;/g, ">")
+      .replace(/&amp;/g, "&");
+  }
+  const bodyToHtml = $("<textarea/>")
+    .html(body)
+    .text();
+
+  $("#noteBody").append(bodyToHtml);
+</script>
+<script>
+  let link = "{{ object.links }}";
+  const links = link.split(",");
+  let noteLinks = document.getElementById("noteLinks");
+  for (var i = 0; i < links.length; i++) {
+    noteLinks.innerHTML += `<i class="fas fa-link"></i> &nbsp;`;
+    let child = document.createElement("a");
+    child.setAttribute("href", `${links[i]}`);
+    child.textContent = links[i];
+    noteLinks.appendChild(child);
+    noteLinks.innerHTML += ", <br/>";
+  }
+</script>
+<script type="text/javascript">
+  const saveNote = function(){
+    document.querySelector("#saveNoteBtn").setAttribute("disabled", "true")
+    var id = parseInt("{{ object.id }}")
+    $.post('/minify-actions/save-shared-note', {id: id}, function(data){
+      if(data.requestStatus == "success"){
+        window.location = data.url
+      }else{
+        //
+      }
+    })
+  }
+</script>
+
+{% endif %}
+{% endblock parent %}

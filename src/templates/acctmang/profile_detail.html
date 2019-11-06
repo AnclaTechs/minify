@@ -1,16 +1,16 @@
 {% extends 'genericB.html' %} {% load static %} {% block head_title %}{{ object.slug }}'s Profile -Minify{% endblock %} {% block parent %}
-
+<link rel="stylesheet" href="{% static 'css/home.css' %}" />
 <div class="container">
   <div style="padding-top: 30px;">
     <div class="row">
-      <div class="col-sm-6">
+      <div class="col-md-6">
         <h4>Username: {{ object.slug }}</h4>
         <h6>
           Date Joined: <b>{{ object.created }}</b>
         </h6>
         <b>{{ object.firstname }} {{ object.lastname }}</b>
       </div>
-      <div class="col-sm-6">
+      <div class="col-md-6">
         <h4>Links</h4>
         <h6>
           Github: <a href="{{ object.github }}">{{ object.github }}</a>
@@ -32,7 +32,7 @@
         </h6>
       </div>
       {% if request.user.username == object.slug %}
-      <div class="text-center">
+      <div class="container">
         <a
           class="btn btn-success"
           href="{% url 'edit-profile' id=object.id slug=object.slug %}"
@@ -40,16 +40,147 @@
         >
       </div>
       {% else %}
-      <div>
+      <div class="container">
         <button class="btn btn-success" href="#">
           Send Mail <i class="fas fa-envelope"></i>
         </button>
       </div>
       {% endif %}
     </div>
-    <hr />
-    <h4>Posts</h4>
   </div>
 </div>
+{% if request.user.username == object.slug %}
+<section class="container py-4">
+  <div class="row">
+    <div class="col-md-12">
+      <ul id="tabsJustified" class="nav nav-tabs">
+        <li class="nav-item">
+          <a
+            href=""
+            data-target="#home1"
+            data-toggle="tab"
+            class="nav-link small text-uppercase"
+            ><i class="fas fa-marker"></i> Posts</a
+          >
+        </li>
+        <li class="nav-item">
+          <a
+            href=""
+            data-target="#profile1"
+            data-toggle="tab"
+            class="nav-link small text-uppercase active"
+          >
+            <span>
+              <i style="color: red;" class="fas fa-bell"></i> Notifications
+            </span></a
+          >
+        </li>
+        <li class="nav-item">
+          <a
+            href=""
+            data-target="#messages1"
+            data-toggle="tab"
+            class="nav-link small text-uppercase"
+            ><i class="fas fa-envelope"></i> Messages</a
+          >
+        </li>
+      </ul>
+      <br />
+      <div id="tabsJustifiedContent" class="tab-content">
+        <div id="home1" class="tab-pane fade">
+          <div class="minify-posts">
+            {% for post in posts %}
+            <div class="minify-posts-users-content">
+                <span style="padding-left: 10px;"> @{{ post.owner }}</span>
+                <img src="{% static 'images/defaultprofile.png' %}"></img>              
+                <div class="post">
+                    <a href="/post/{{ post.id }}/{{ post.owner }}">
+                        <p class="infinite-item">{{ post.body }}</p>
+                    </a>
+                </div>
+                <div style="color:grey; margin-top: 7px;" class="text-center">
+                    <span style="display: inline"><button onclick=likePost({{ post.id }})> <i class="far fa-heart fa-lg"></i> {{ post.likes.count }} </button></span>
+                    &nbsp;
+                    &nbsp;
+                    &nbsp;
+                    &nbsp;
+                    &nbsp;
+                    <span style="display: inline"><a href="/post/{{ post.id }}/{{ post.owner }}"><i class="far fa-comment-alt fa-lg"></i> {{ post.postcommentary.count }} </a></span>
+                </div>
+            </div>
+            <br/>
+            {% endfor %}
+          </div>
+        </div>
+        <div id="profile1" class="tab-pane fade active show">
+          {% if notification_count == 0 %}
+          <div class="text-center">
+            You have no notifications at the moment.
+          </div>
+          {% else %}
+          <div class="list-group">
+            <p style="margin-top: -20px; margin-bottom: 3px;">
+              <span class="float-right badge badge-pill badge-dark"
+                >Unread ( {{ unread }} )</span
+              >
+            </p>
 
-{% endblock parent %}
+            {% for notification in notifications %}
+            <a
+              href="{{ notification.action }}"
+              class="list-group-item d-inline-block"
+            >
+              {{ notification.message }}
+              <span style="float: right;">{{ notification.created }} </span></a
+            >
+
+            {% endfor %}
+          </div>
+          {% endif %}
+        </div>
+        <div id="messages1" class="tab-pane fade">
+          <div class="text-center">
+            Your inbox is all cleared.
+            <br/>
+            <br/>
+            <img style="    opacity: 0.4; width: 80px;" src="{% static 'images/mailicon.svg' %}">
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+{% else %}
+<section class="container">
+  <hr />
+  <div>
+    Posts
+    <div class="container">
+      <div class="minify-posts">
+            {% for post in posts %}
+            <div class="minify-posts-users-content">
+                <span style="padding-left: 10px;"> @{{ post.owner }}</span>
+                <img src="{% static 'images/defaultprofile.png' %}"></img>              
+                <div class="post">
+                    <a href="/post/{{ post.id }}/{{ post.owner }}">
+                        <p class="infinite-item">{{ post.body }}</p>
+                    </a>
+                </div>
+                <div style="color:grey; margin-top: 7px;" class="text-center">
+                    <span style="display: inline"><button onclick=likePost({{ post.id }})> <i class="far fa-heart fa-lg"></i> {{ post.likes.count }} </button></span>
+                    &nbsp;
+                    &nbsp;
+                    &nbsp;
+                    &nbsp;
+                    &nbsp;
+                    <span style="display: inline"><a href="/post/{{ post.id }}/{{ post.owner }}"><i class="far fa-comment-alt fa-lg"></i> {{ post.postcommentary.count }} </a></span>
+                </div>
+            </div>
+            <br/>
+            {% endfor %}
+          </div>
+    </div>
+
+  </div>
+</section>
+{% endif %} {% endblock parent %}

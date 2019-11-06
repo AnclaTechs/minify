@@ -36,7 +36,7 @@ form .form-control {
 .coders-background {
   position: relative;
   color: hsla(0, 0%, 100%, 0.6);
-  background: url("../images/engineer.svg"), #2b3137;
+  background: url("../images/engineer.fe1f7b62f68e.svg"), #2b3137;
   background-position: center 10%;
   background-size: cover;
   height: 800px;

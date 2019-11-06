@@ -10,7 +10,7 @@
       integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T"
       crossorigin="anonymous"
     />
-    {% block extra_head_tags %}{% endblock %} {% load static %}
+    {% block extra_head_tags %}{% endblock %} {% load static %} {% load custom_tags %}
     <link rel="stylesheet" href="{% static 'css/base.css' %}" />
     <title>{% block head_title %} {% endblock %}</title>
   </head>
@@ -34,11 +34,14 @@
             Sign out
           </a>
           <a href="{% url 'user-profile' slug=user.username %}"
-            ><i
-              style="margin-left: 15px; color: #ffffff;"
-              class="fas fa-user-alt fa-lg"
-            ></i
-          ></a>
+            >
+            {% unread_notification request.user as notification %}
+            {% if notification %}
+              <i style="margin-left: 15px; text-align:center; vertical-align:middle; position: relative; color: #ffffff" class="fas fa-user-alt fa-lg"><span class="badged"></span></i>
+            {% else %}
+              <i style="margin-left: 15px; color: #ffffff;" class="fas fa-user-alt fa-lg"></i>
+            {% endif %}
+            </a>
         </form>
       </div>
     </nav>

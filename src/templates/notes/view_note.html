@@ -18,7 +18,7 @@
   <br />
   <br />
   <div class="text-center">
-    <button class="btn btn-primary btn-lg">
+    <button class="btn btn-primary btn-lg" data-toggle="modal" data-target="#shareNoteModal">
       <i class="fas fa-share-alt"></i> Share
     </button>
     &nbsp;
@@ -32,6 +32,52 @@
   <br />
   <br />
   <br />
+</div>
+
+<!--Share Note Query Modal -->
+<div class="modal fade" id="shareNoteModal" tabindex="-1" role="dialog" aria-labelledby="shareNoteModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="commentModalLabel">Share Note</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form>
+          <div class="form-group">
+            <input type="text" id="receiver-id" placeholder="Enter receivers username or email address" class="form-control">
+            <br/>
+            <p style="display: none;" id="cofirmation-message" class="text-center">Click Confirm to Share Note with: <b  style="color: green;"id="confirmation-id"></b></p>
+            <p style="display: none;" id="error-message" class="text-center">No user identifiable with <b style="color: red;" id="error-id"></b></p>
+            <p style="display: none;" id="success-message" class="text-center">Success! Now sharing Note with <b style="color: green;" id="success-id"></b></p>
+            <p style="display: none;" id="backend-error" class="text-center"></p>
+
+
+
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button disabled onclick="ProceedFunc()" type="button" id="proceedButton" class="btn btn-primary">Proceed
+
+        <div
+        hidden="hidden"
+        id="proceed-spinner"
+        class="spinner-grow"
+        role="status"
+        style="vertical-align: middle;"
+      >
+        <span class="sr-only">Loading...</span>
+      </div>
+
+        </button>
+        <button style="display: none;" onclick="ConfirmFunc()" type="button" id="confirmButton" class="btn btn-primary">Confirm</button>
+      </div>
+    </div>
+  </div>
 </div>
 
 <script>
@@ -62,6 +108,68 @@
     child.textContent = links[i];
     noteLinks.appendChild(child);
     noteLinks.innerHTML += ", <br/>";
+  }
+</script>
+<script type="text/javascript">
+  $("#receiver-id").on("keyup", function() {
+    var textLength = $("#receiver-id").val();
+    var btn = document.querySelector("#proceedButton");
+    if (textLength.length >= 1) {
+      btn.removeAttribute("disabled");
+    } else {
+      btn.setAttribute("disabled", "true");
+    }
+  });
+</script>
+
+<script type="text/javascript">
+  const ProceedFunc = function(){
+    document.querySelector("#receiver-id").setAttribute("readonly", "true")
+    document.querySelector("#success-message").setAttribute("style", "display: none")
+    document.querySelector("#backend-error").setAttribute("style", "display: none")
+    document.querySelector("#proceed-spinner").removeAttribute("hidden");
+    var usernameEmail = $("#receiver-id").val();
+    $.post('/minify-actions/confirm-user-to-share', { usernameEmail: usernameEmail}, function(data){
+      if(data.queryStatus == "success"){
+        document.querySelector("#proceedButton").setAttribute("style", "display: none")
+        document.querySelector("#confirmation-id").innerHTML = `@${data.username}`
+        document.querySelector("#error-message").setAttribute("style", "display: none")
+        document.querySelector("#cofirmation-message").setAttribute("style", "display: inline")
+        document.querySelector("#confirmButton").setAttribute("style", "display: inline");
+      }else{
+        document.querySelector("#receiver-id").removeAttribute("readonly")
+        document.querySelector("#proceed-spinner").setAttribute("hidden", "true");
+        document.querySelector("#error-id").innerHTML = usernameEmail
+        document.querySelector("#cofirmation-message").setAttribute("style", "display: none")
+        document.querySelector("#error-message").setAttribute("style", "display: inline")
+
+      }
+    })
+  }
+
+  const ConfirmFunc = function(){
+    const noteId = "{{ note.id }}"
+    const usernameEmail = $("#receiver-id").val();
+    $.post('/minify-actions/share-note', { usernameEmail: usernameEmail, noteId: noteId }, function(data){
+      if(data.requestStatus == "success"){
+        document.querySelector("#success-id").innerHTML = usernameEmail
+        document.querySelector("#cofirmation-message").setAttribute("style", "display: none")
+        document.querySelector("#success-message").setAttribute("style", "display: inline")
+        document.querySelector("#confirmButton").setAttribute("style", "display: none");
+        document.querySelector("#proceedButton").setAttribute("style", "display: inline")
+        document.querySelector("#receiver-id").removeAttribute("readonly")
+        document.querySelector("#proceed-spinner").setAttribute("hidden", "true"); 
+      }
+      else{
+        document.querySelector("#backend-error").innerHTML = data.requestStatus
+        document.querySelector("#cofirmation-message").setAttribute("style", "display: none")
+        document.querySelector("#backend-error").setAttribute("style", "display: inline")
+        document.querySelector("#confirmButton").setAttribute("style", "display: none");
+        document.querySelector("#proceedButton").setAttribute("style", "display: inline")
+        document.querySelector("#receiver-id").removeAttribute("readonly")
+        document.querySelector("#proceed-spinner").setAttribute("hidden", "true"); 
+      }
+    })
   }
 </script>
 {% endblock parent %}
