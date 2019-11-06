@@ -32,4 +32,7 @@ class Notification(models.Model):
         notification = Notification(user=user, message=message, action=action)
         notification.save()
 
+    def __str__(self):
+        return str(self.created)
+
     
