@@ -1,0 +1,52 @@
+{
+  "addons": [
+    "heroku-postgresql",
+    "heroku-redis"
+  ],
+  "buildpacks": [
+    {
+      "url": "heroku/python"
+    }
+  ],
+  "env": {
+    "ADMINPATH": {
+      "generator": "secret"
+    },
+    "ALLOWED_HOSTS": {
+      "generator": "secret"
+    },
+    "CELERY_BROKER_URL": {
+      "generator": "secret"
+    },
+    "CELERY_RESULT_BACKEND": {
+      "generator": "secret"
+    },
+    "DISABLE_COLLECTSTATIC": {
+      "generator": "secret"
+    },
+    "EMAIL_HOST_PASSWORD": {
+      "generator": "secret"
+    },
+    "EMAIL_HOST_USER": {
+      "generator": "secret"
+    },
+    "REDIS_URL": {
+      "generator": "secret"
+    },
+    "SECRET_KEY": {
+      "generator": "secret"
+    }
+  },
+  "formation": {
+    "worker": {
+      "quantity": 1
+    },
+    "web": {
+      "quantity": 1
+    }
+  },
+  "name": "minify",
+  "scripts": {
+  },
+  "stack": "heroku-18"
+}
