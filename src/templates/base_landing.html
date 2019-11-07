@@ -23,7 +23,7 @@
       integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T"
       crossorigin="anonymous"
     />
-    {% load static %} {% load widget_tweaks %}
+    {% load static %} {% load account socialaccount %} {% load widget_tweaks %}
     <link rel="stylesheet" href="{% static 'css/base.css' %}" />
     <title>Minify | Cloud diary for developers</title>
   </head>
@@ -122,11 +122,19 @@
                 >
                   Sign up for Minify
               </a>
+              <br/>
+              <br/>
+              <a style="color: inherit;" href="https://minify.tech/accounts/github/login/?process=login"><i class="fab fa-github fa-2x"></i></a>
               </div>
             </div>
           </div>
           <div class="col-sm-6 m-auto wrapper-2half">
             <div class="card card-body mt-5">
+              <div style="list-style: none;"class="text-center">
+                Don't have an account? Sign in with: <br> {% include "socialaccount/snippets/provider_list.html" with process="login" %}
+              </div>
+              <br>
+              <p class="text-center">Or <b>Sign up</b> below.</p>
               <form method="POST" action="{% url 'account_signup' %}">
                 {% if messages %}
                     <ul class="messages">

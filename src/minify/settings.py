@@ -43,14 +43,17 @@ INSTALLED_APPS = [
     'django.contrib.sites',
     'acctmang.apps.AcctmangConfig',
     'base.apps.BaseConfig',
+    'nfunctions.apps.NfunctionsConfig',
     'widget_tweaks',
     'bootstrap4',
     'tinymce',
+    'djcelery_email',
+
     'allauth',
     'allauth.account',
     'allauth.socialaccount',
-    'nfunctions.apps.NfunctionsConfig',
-    'djcelery_email',
+    #
+    'allauth.socialaccount.providers.github',
 
 
 ]
@@ -195,6 +198,22 @@ ACCOUNT_USER_MODEL_USERNAME_FIELD = 'username'
 ACCOUNT_USERNAME_REQUIRED = True
 ACCOUNT_USER_MODEL_USERNAME_FIELD = 'username'
 
+
+SOCIALACCOUNT_ADAPTER = 'allauth.socialaccount.adapter.DefaultSocialAccountAdapter'
+SOCIALACCOUNT_AUTO_SIGNUP = True
+SOCIALACCOUNT_EMAIL_VERIFICATION = ACCOUNT_EMAIL_VERIFICATION
+SOCIALACCOUNT_EMAIL_REQUIRED = ACCOUNT_EMAIL_REQUIRED
+SOCIALACCOUNT_PROVIDERS = {
+    'github': {
+        'SCOPE': [
+            'user',
+            'repo',
+            'read:org',
+        ],
+    }
+}
+SOCIALACCOUNT_QUERY_EMAIL = ACCOUNT_EMAIL_REQUIRED
+SOCIALACCOUNT_STORE_TOKENS = True
 
 #CELERY
 CELERY_BROKER_URL = os.environ["CELERY_BROKER_URL"]

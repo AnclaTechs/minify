@@ -1,7 +1,5 @@
 {% extends "account/base.html" %} {% load bootstrap4%} {% load i18n %} {% load
-account socialaccount %} {% block head_title %}{% trans "Sign In" %} {% endblock %}
-
-{% block content %}
+account socialaccount %} {% block head_title %}{% trans "Sign In" %} {% endblock %} {% block content %}
 
 <div class="container">
   <div style="padding-top: 10px">
@@ -11,6 +9,11 @@ account socialaccount %} {% block head_title %}{% trans "Sign In" %} {% endblock
           <div class="text-center">
             <h1>{% trans "Sign In" %}</h1>
           </div>
+          <div style="list-style: none;"class="text-center">
+            Sign in with one of your existing third party accounts: <br> {% include "socialaccount/snippets/provider_list.html" with process="login" %}
+          </div>
+          <br>
+          <p class="text-center">Or <b><a href="{% url 'account_signup' %}">Sign up</a></b> and Sign in below.</p>
 
           <form class="login" method="POST" action="{% url 'account_login' %}">
             {% csrf_token %} {% bootstrap_form form %}
