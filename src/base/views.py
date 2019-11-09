@@ -447,11 +447,13 @@ def shared_note(request, pk, slug):
     #check owner permitted viewers
     if note.permitted_viewers != {}:
         if request.user.id in note.permitted_viewers["viewers"]:
-            note_action = "/sharednote/{}/{}".format(note.id, note.slug)
-            notification = Notification.objects.get(user=request.user, action=note_action)
-            notification.read = True
-            notification.save(update_fields=["read"])        
-            #
+            note_action = "sharednote/{}/{}".format(note.id, note.slug)
+            try:
+                notification = Notification.objects.get(user=request.user, action=note_action)
+                notification.read = True
+                notification.save(update_fields=["read"])        
+            except ObjectDoesNotExist:
+                pass
             return render(
                 request,
                 "notes/shared_note.html",
