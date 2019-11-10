@@ -9,9 +9,18 @@
 
 <link rel="stylesheet" href="{% static 'css/note.css' %}" />
 <div class="container">
-  <div class="text-center">
-    <h4 class="note-title">{{ note.title }}</h4>
+  <div class="text-center title-board">
+    <h4 class="note-title "> <span style="float: left;"><a class="note-more" onclick="dropDown()" href="javascript:void(0)">:::</a></span> {{ note.title }} </h4>
+  
+    <div id="noteDropdown" class="dropdown-content">
+      <a href="javascript:void(0)"><i class="fas fa-share-alt"></i> Share</a>
+      <a href="javascript:void(0)"><i class="fas fa-edit"></i> Edit</a>
+      <a href="javascript:void(0)"><img style="max-width: 25px" src="{% static 'images/compare2.png' %}" > Compare</a>
+      <a href="javascript:void(0)"><i class="fas fa-file-pdf"></i> Export</a>
+      <a href="javascript:void(0)"><i class="fas fa-trash-alt"></i> Delete </a>
+    </div>
   </div>
+  
   <hr />
   <p id="noteBody" class="note-body"></p>
   <p id="noteLinks"></p>
@@ -105,6 +114,7 @@
     noteLinks.innerHTML += `<i class="fas fa-link"></i> &nbsp;`;
     let child = document.createElement("a");
     child.setAttribute("href", `${links[i]}`);
+    child.setAttribute("target", "_")
     child.textContent = links[i];
     noteLinks.appendChild(child);
     noteLinks.innerHTML += ", <br/>";
@@ -120,6 +130,26 @@
       btn.setAttribute("disabled", "true");
     }
   });
+</script>
+
+<script type="text/javascript">
+  
+  function dropDown() {
+  document.getElementById("noteDropdown").classList.toggle("show");
+}
+
+window.onclick = function(event) {
+  if (!event.target.matches('.note-more')) {
+    var dropdowns = document.getElementsByClassName("dropdown-content");
+    var i;
+    for (i = 0; i < dropdowns.length; i++) {
+      var openDropdown = dropdowns[i];
+      if (openDropdown.classList.contains('show')) {
+        openDropdown.classList.remove('show');
+      }
+    }
+  }
+}
 </script>
 
 <script type="text/javascript">
