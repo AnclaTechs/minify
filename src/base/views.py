@@ -19,6 +19,8 @@ from nfunctions.models import UrlHit, HitCount, Notification
 from minify.mailer import Mailer
 mail = Mailer()
 from copy import deepcopy
+import re
+
 
 
 def get_client_ip(request):
@@ -253,6 +255,13 @@ def make_post(request):
         user = request.user.profile
         username = request.user.username
         post_content = request.POST.get("postContent")
+        #Check for links
+        urls = re.findall('http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+', post_content)
+        if len(urls) >= 1:
+            print("Link found")
+            for link in urls:
+                post_content = post_content.replace(link, "<a target='_' href={}>{}</a>".format(link, link))
+        #End Check links
         new_post = Posts.objects.create(owner=user, body=post_content)
         post_link = '/post/{}/{}'.format(new_post.id, username )
         payload = {"url": post_link }
@@ -302,6 +311,13 @@ def pass_commentary(request):
         post_id = request.POST.get("id")
         post_in_view = Posts.objects.get(id=post_id)
         comment = request.POST.get("postContent")
+        #Check for links
+        urls = re.findall('http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+', comment)
+        if len(urls) >= 1:
+            print("Link found")
+            for link in urls:
+                comment = comment.replace(link, "<a target='_' href={}>{}</a>".format(link, link))
+        #End Check links
         PostsCommentary.objects.create(owner=user, post=post_in_view, body=comment)
         payload = {"status": "success"}
         payload = json.dumps(payload)

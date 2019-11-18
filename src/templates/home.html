@@ -147,7 +147,7 @@
                         <img src="{% static 'images/defaultprofile.png' %}"></img>              
                         <div class="post">
                           <a href="/post/{{ post.id }}/{{ post.owner }}">
-                            <p class="infinite-item">{{ post.body }}</p>
+                            <p class="infinite-item">{{ post.body| safe }}</p>
                           </a>
                         </div>
                         <div style="color:grey; margin-top: 7px;" class="text-center">
