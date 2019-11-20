@@ -29,7 +29,7 @@ class Note(models.Model):
 
     owner = models.ForeignKey(AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="note")
     title = models.CharField(max_length=100)
-    slug = models.SlugField()
+    slug = models.SlugField(max_length=100)
     notetype = models.CharField(choices=NOTETYPE, max_length=10, default="GEN")
     note = models.TextField()
     links = models.CharField(max_length=2000)
