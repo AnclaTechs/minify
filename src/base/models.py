@@ -69,7 +69,7 @@ class Questions(models.Model):
     owner = models.ForeignKey(
         AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="questions")
     title = models.CharField(max_length=200, blank=False)
-    slug = models.SlugField()
+    slug = models.SlugField(max_length=200)
     body = HTMLField('Content')
     views = models.IntegerField(default=0)
     created = models.DateTimeField(
